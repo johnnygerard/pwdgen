@@ -42,6 +42,7 @@ EXAMPLES (using default length except for the first):
   no slashes:               pwdgen -e '\/'
   only slashes and letters: pwdgen -Li '\/'""")
 parser.add_argument('length', nargs='?', default=16, type=int, help='number of password characters (default: 16)')
+parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.0')
 
 parser.add_argument('-z', '--all',          action='store_true', help='all characters (default)')
 parser.add_argument('-l', '--lowercase',    action='store_true', help='latin small letters (a to z)')
