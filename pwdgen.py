@@ -47,7 +47,7 @@ EXAMPLES
   8-bit key:   pwdgen -b 8
   base64 key:  pwdgen -ai '+/'""")
 parser.add_argument('length', nargs='?', default=16, type=int, help='number of password characters (default: 16)')
-parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.0', help='''show program's version number and exit
+parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.1', help='''show program's version number and exit
  ''')
 
 parser.add_argument('-l', '--lowercase',    action='store_true', help='latin small letters (a-z)')
