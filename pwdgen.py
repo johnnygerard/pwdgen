@@ -54,9 +54,9 @@ parser.add_argument('length', nargs='?', default=16, type=int, help='number of p
 parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.0', help='''show program's version number and exit
  ''')
 
-parser.add_argument('-l', '--lowercase',    action='store_true', help='latin small letters (a to z)')
-parser.add_argument('-u', '--uppercase',    action='store_true', help='latin capital letters (A to Z)')
-parser.add_argument('-d', '--digit',        action='store_true', help='decimal digits (0 to 9)')
+parser.add_argument('-l', '--lowercase',    action='store_true', help='latin small letters (a-z)')
+parser.add_argument('-u', '--uppercase',    action='store_true', help='latin capital letters (A-Z)')
+parser.add_argument('-d', '--digit',        action='store_true', help='decimal digits (0-9)')
 parser.add_argument('-s', '--symbol',       action='store_true', help='punctuation and symbols')
 parser.add_argument('-L', '--letter',       action='store_true', help='same as --lowercase --uppercase')
 parser.add_argument('-a', '--alphanumeric', action='store_true', help='same as --letter --digit')
@@ -68,10 +68,10 @@ parser.add_argument('-e', '--exclude', default='', metavar='EXCLUDED', help='str
 parser.add_argument('-i', '--include', default='', metavar='INCLUDED', help='''string of characters to include
  ''')
 
-parser.add_argument('-b', '--binary',       action='store_true', help='bits (0 | 1)')
-parser.add_argument('-o', '--octal',        action='store_true', help='octal digits (0 to 7)')
-parser.add_argument('-x', '--hex-lower',    action='store_true', help='lowercase hexadecimal digits (0 to 9 | a to f)')
-parser.add_argument('-X', '--hex-upper',    action='store_true', help='''uppercase hexadecimal digits (0 to 9 | A to F)
+parser.add_argument('-b', '--binary',       action='store_true', help='bits (0-1)')
+parser.add_argument('-o', '--octal',        action='store_true', help='octal digits (0-7)')
+parser.add_argument('-x', '--hex-lower',    action='store_true', help='lowercase hexadecimal digits (0-9, a-f)')
+parser.add_argument('-X', '--hex-upper',    action='store_true', help='''uppercase hexadecimal digits (0-9, A-F)
  ''')
 
 parser.add_argument('--pure', action='store_true', help='''Disable the minimum of 1 character applied to the following categories:
