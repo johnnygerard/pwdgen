@@ -41,15 +41,11 @@ The user-defined character set is built in two phases:
     """ 
 EXAMPLES
 
-  4-digit PIN:         pwdgen -d 4
-  no symbols:          pwdgen -a
-  symbols:             pwdgen -s
-  default:             pwdgen
-  no slashes:          pwdgen -e '\/'
-  slashes and letters: pwdgen -Li '\/'
-  8-bit key:           pwdgen -b 8
-  base64 key:          pwdgen -ai '+/'
-  a, b and c's:        pwdgen -0i abc""")
+  4-digit PIN: pwdgen -d 4
+  no symbols:  pwdgen -a
+  no slashes:  pwdgen -e '\/'
+  8-bit key:   pwdgen -b 8
+  base64 key:  pwdgen -ai '+/'""")
 parser.add_argument('length', nargs='?', default=16, type=int, help='number of password characters (default: 16)')
 parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.0', help='''show program's version number and exit
  ''')
