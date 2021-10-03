@@ -26,7 +26,8 @@ from string import digits, octdigits, punctuation, ascii_lowercase, ascii_upperc
 from secrets import choice, randbelow
 import argparse, sys
 
-parser = argparse.ArgumentParser(prog='pwdgen', formatter_class=argparse.RawTextHelpFormatter, description=
+PROG_NAME = 'pwdgen'
+parser = argparse.ArgumentParser(prog=PROG_NAME, formatter_class=argparse.RawTextHelpFormatter, description=
     '''Generate offline secure passwords using a CSPRNG (Cryptographically Strong Pseudo Random Number Generator).
  
 
@@ -41,12 +42,12 @@ The user-defined character set is built in two phases:
     """ 
 EXAMPLES
 
-  4-digit PIN: pwdgen -d 4
-  no symbols:  pwdgen -a
-  no slashes:  pwdgen -e '\/'
-  8-bit key:   pwdgen -b 8
-  base64 key:  pwdgen -ai '+/'""")
-parser.add_argument('length', nargs='?', default=16, type=int, help='number of password characters (default: 16)')
+  4-digit PIN: %(prog)s -d 4
+  no symbols:  %(prog)s -a
+  no slashes:  %(prog)s -e '\/'
+  8-bit key:   %(prog)s -b 8
+  base64 key:  %(prog)s -ai '+/'""")
+parser.add_argument('length', nargs='?', default=16, type=int, help='number of password characters (default: %(default)s)')
 parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.1', help='''show program's version number and exit
  ''')
 
@@ -73,14 +74,14 @@ parser.add_argument('-X', '--hex-upper',    action='store_true', help='''upperca
 parser.add_argument('--pure', action='store_true', help='''Disable the minimum of 1 character applied to the following categories:
     digits, symbols, lowercase and uppercase
 This minimum only applies to passwords with a length of at least 4.
-As example: 'pwdgen 4' always contains exactly 1 character of each category.
-            'pwdgen 4 --pure' could yield the password 0000 or $$$$.''')
+As example: '%(prog)s 4' always contains exactly 1 character of each category.
+            '%(prog)s 4 --pure' could yield the password 0000 or $$$$.''')
 
 namespace = parser.parse_args()
 
 # validate length argument
 if namespace.length <= 0:
-    sys.exit('pwdgen: error: length must be positive')
+    sys.exit(f'{PROG_NAME}: error: length must be positive')
 
 
 # define character sets
@@ -103,11 +104,11 @@ included_set = set(namespace.include)
 # sanitize --exclude and --include arguments
 for char in (excluded_set | included_set):
     if char not in ALL:
-        sys.exit(f'pwdgen: error: found unauthorized character (U+{ord(char):04X})')
+        sys.exit(f'{PROG_NAME}: error: found unauthorized character (U+{ord(char):04X})')
 
 # check --exclude and --include for conflicts
 if excluded_set & included_set:
-    sys.exit('pwdgen: error: options --exclude and --include conflict (common characters disallowed)')
+    sys.exit(f'{PROG_NAME}: error: options --exclude and --include conflict (common characters disallowed)')
 
 # phase 1: combine flags to build the base character set
 character_set = set()
@@ -135,7 +136,7 @@ character_set -= excluded_set
 
 character_list = list(character_set)
 if not character_list:
-    sys.exit('pwdgen: error: character set empty')
+    sys.exit(f'{PROG_NAME}: error: character set empty')
 password = []
 
 if namespace.length >= 4 and not namespace.pure:
