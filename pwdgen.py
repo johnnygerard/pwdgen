@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -22,56 +22,92 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from string import digits, octdigits, punctuation, ascii_lowercase, ascii_uppercase
+from string import *
 from secrets import choice, randbelow
-import argparse, sys
+import argparse
+import sys
 
 PROG_NAME = 'pwdgen'
-parser = argparse.ArgumentParser(prog=PROG_NAME, formatter_class=argparse.RawTextHelpFormatter, description=
-    '''Generate offline secure passwords using a CSPRNG (Cryptographically Strong Pseudo Random Number Generator).
- 
+parser = argparse.ArgumentParser(
+    prog=PROG_NAME,
+    formatter_class=argparse.RawTextHelpFormatter,
+    description='''Generate offline secure passwords using a CSPRNG\
+ (Cryptographically Strong Pseudo Random Number Generator).
 
-By default, each character is randomly selected from the ASCII character set (excluding space and control characters).
+By default, each character is randomly selected from the ASCII character set\
+ (excluding space and control characters).
 The user-defined character set is built in two phases:
 
-    The first phase forms a base character set using one or more flags (--all when no flags are passed).
-    Each flag is its own character set and their combination defines a character superset (equivalent to their set union).
+    The first phase forms a base character set using one or more flags (--all\
+ when no flags are passed).
+    Each flag is its own character set and their combination defines a\
+ character superset (equivalent to their set union).
 
-    The second phase adds or substracts specific characters from that set using the options --include or --exclude.
-    These two options may require surrounding quotes and default to the empty string.''', epilog=
-    """ 
-EXAMPLES
+    The second phase adds or substracts specific characters from that set\
+ using the options --include or --exclude.
+    These two options may require surrounding quotes and default to the empty\
+ string.''',
+    epilog="""EXAMPLES
 
   4-digit PIN: %(prog)s -d 4
   no symbols:  %(prog)s -a
-  no slashes:  %(prog)s -e '\/'
+  no slashes:  %(prog)s -e '\\/'
   8-bit key:   %(prog)s -b 8
   base64 key:  %(prog)s -ai '+/'""")
-parser.add_argument('length', nargs='?', default=16, type=int, help='number of password characters (default: %(default)s)')
-parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.1', help='''show program's version number and exit
- ''')
+parser.add_argument(
+    'length', nargs='?', default=16, type=int,
+    help='number of password characters (default: %(default)s)')
+parser.add_argument(
+    '-v', '--version',  action='version', version='%(prog)s 2.1',
+    help="show program's version number and exit\n\n")
 
-parser.add_argument('-l', '--lowercase',    action='store_true', help='latin small letters (a-z)')
-parser.add_argument('-u', '--uppercase',    action='store_true', help='latin capital letters (A-Z)')
-parser.add_argument('-d', '--digit',        action='store_true', help='decimal digits (0-9)')
-parser.add_argument('-s', '--symbol',       action='store_true', help='punctuation and symbols')
-parser.add_argument('-L', '--letter',       action='store_true', help='same as --lowercase --uppercase')
-parser.add_argument('-a', '--alphanumeric', action='store_true', help='same as --letter --digit')
-parser.add_argument('-A', '--all',          action='store_true', help='same as --alphanumeric --symbol (default)')
-parser.add_argument('-0', '--empty',        action='store_true', help='''empty character set (only useful if combined with --include)
- ''')
+parser.add_argument(
+    '-l', '--lowercase', action='store_true',
+    help='latin small letters (a-z)')
+parser.add_argument(
+    '-u', '--uppercase', action='store_true',
+    help='latin capital letters (A-Z)')
+parser.add_argument(
+    '-d', '--digit', action='store_true',
+    help='decimal digits (0-9)')
+parser.add_argument(
+    '-s', '--symbol', action='store_true',
+    help='punctuation and symbols')
+parser.add_argument(
+    '-L', '--letter', action='store_true',
+    help='same as --lowercase --uppercase')
+parser.add_argument(
+    '-a', '--alphanumeric', action='store_true',
+    help='same as --letter --digit')
+parser.add_argument(
+    '-A', '--all', action='store_true',
+    help='same as --alphanumeric --symbol (default)')
+parser.add_argument(
+    '-0', '--empty', action='store_true',
+    help='empty character set (only useful if combined with --include)\n\n')
 
-parser.add_argument('-e', '--exclude', default='', metavar='EXCLUDED', help='string of characters to exclude')
-parser.add_argument('-i', '--include', default='', metavar='INCLUDED', help='''string of characters to include
- ''')
+parser.add_argument(
+    '-e', '--exclude', default='', metavar='EXCLUDED',
+    help='string of characters to exclude')
+parser.add_argument(
+    '-i', '--include', default='', metavar='INCLUDED',
+    help='string of characters to include\n\n')
 
-parser.add_argument('-b', '--binary',       action='store_true', help='bits (0-1)')
-parser.add_argument('-o', '--octal',        action='store_true', help='octal digits (0-7)')
-parser.add_argument('-x', '--hex-lower',    action='store_true', help='lowercase hexadecimal digits (0-9, a-f)')
-parser.add_argument('-X', '--hex-upper',    action='store_true', help='''uppercase hexadecimal digits (0-9, A-F)
- ''')
+parser.add_argument(
+    '-b', '--binary', action='store_true',
+    help='bits (0-1)')
+parser.add_argument(
+    '-o', '--octal', action='store_true',
+    help='octal digits (0-7)')
+parser.add_argument(
+    '-x', '--hex-lower', action='store_true',
+    help='lowercase hexadecimal digits (0-9, a-f)')
+parser.add_argument(
+    '-X', '--hex-upper', action='store_true',
+    help='uppercase hexadecimal digits (0-9, A-F)\n\n')
 
-parser.add_argument('--pure', action='store_true', help='''Disable the minimum of 1 character applied to the following categories:
+parser.add_argument('--pure', action='store_true', help='''Disable the minimum\
+ of 1 character applied to the following categories:
     digits, symbols, lowercase and uppercase
 This minimum only applies to passwords with a length of at least 4.
 As example: '%(prog)s 4' always contains exactly 1 character of each category.
@@ -85,17 +121,17 @@ if namespace.length <= 0:
 
 
 # define character sets
-LOWERCASE    = set(ascii_lowercase)
-UPPERCASE    = set(ascii_uppercase)
-LETTER       = LOWERCASE | UPPERCASE
-DIGIT        = set(digits)
+LOWERCASE = set(ascii_lowercase)
+UPPERCASE = set(ascii_uppercase)
+LETTER = LOWERCASE | UPPERCASE
+DIGIT = set(digits)
 ALPHANUMERIC = LETTER | DIGIT
-SYMBOL       = set(punctuation)
-ALL          = ALPHANUMERIC | SYMBOL
-BINARY       = set('01')
-OCTAL        = set(octdigits)
-HEX_LOWER    = DIGIT | set('abcdef')
-HEX_UPPER    = DIGIT | set('ABCDEF')
+SYMBOL = set(punctuation)
+ALL = ALPHANUMERIC | SYMBOL
+BINARY = set('01')
+OCTAL = set(octdigits)
+HEX_LOWER = DIGIT | set('abcdef')
+HEX_UPPER = DIGIT | set('ABCDEF')
 
 
 excluded_set = set(namespace.exclude)
@@ -104,27 +140,39 @@ included_set = set(namespace.include)
 # sanitize --exclude and --include arguments
 for char in (excluded_set | included_set):
     if char not in ALL:
-        sys.exit(f'{PROG_NAME}: error: found unauthorized character (U+{ord(char):04X})')
+        sys.exit(f'{PROG_NAME}: error: found unauthorized character\
+ (U+{ord(char):04X})')
 
 # check --exclude and --include for conflicts
 if excluded_set & included_set:
-    sys.exit(f'{PROG_NAME}: error: options --exclude and --include conflict (common characters disallowed)')
+    sys.exit(f'{PROG_NAME}: error: options --exclude and --include conflict\
+ (common characters disallowed)')
 
 # phase 1: combine flags to build the base character set
 character_set = set()
 if namespace.all:
     character_set = ALL
 else:
-    if namespace.lowercase:    character_set |= LOWERCASE
-    if namespace.uppercase:    character_set |= UPPERCASE
-    if namespace.letter:       character_set |= LETTER
-    if namespace.digit:        character_set |= DIGIT
-    if namespace.alphanumeric: character_set |= ALPHANUMERIC
-    if namespace.symbol:       character_set |= SYMBOL
-    if namespace.binary:       character_set |= BINARY
-    if namespace.octal:        character_set |= OCTAL
-    if namespace.hex_lower:    character_set |= HEX_LOWER
-    if namespace.hex_upper:    character_set |= HEX_UPPER
+    if namespace.lowercase:
+        character_set |= LOWERCASE
+    if namespace.uppercase:
+        character_set |= UPPERCASE
+    if namespace.letter:
+        character_set |= LETTER
+    if namespace.digit:
+        character_set |= DIGIT
+    if namespace.alphanumeric:
+        character_set |= ALPHANUMERIC
+    if namespace.symbol:
+        character_set |= SYMBOL
+    if namespace.binary:
+        character_set |= BINARY
+    if namespace.octal:
+        character_set |= OCTAL
+    if namespace.hex_lower:
+        character_set |= HEX_LOWER
+    if namespace.hex_upper:
+        character_set |= HEX_UPPER
     # default flag (--all) or --empty
     if not character_set and not namespace.empty:
         character_set = ALL
@@ -146,18 +194,22 @@ if namespace.length >= 4 and not namespace.pure:
     ASCII_LOWERCASE = []
     ASCII_UPPERCASE = []
     for char in character_list:
-        if   char in digits:          DIGITS.append(char)
-        elif char in ascii_lowercase: ASCII_LOWERCASE.append(char)
-        elif char in ascii_uppercase: ASCII_UPPERCASE.append(char)
-        else:                         PUNCTUATION.append(char)
-    
+        if char in digits:
+            DIGITS.append(char)
+        elif char in ascii_lowercase:
+            ASCII_LOWERCASE.append(char)
+        elif char in ascii_uppercase:
+            ASCII_UPPERCASE.append(char)
+        else:
+            PUNCTUATION.append(char)
+
     count = sum([bool(DIGITS),
                  bool(PUNCTUATION),
                  bool(ASCII_LOWERCASE),
                  bool(ASCII_UPPERCASE)])
 
     for i in range(namespace.length - count):
-            password.append(choice(character_list))
+        password.append(choice(character_list))
 
     # make sure we have at least one character for each non-empty category
     for chars in [DIGITS, PUNCTUATION, ASCII_LOWERCASE, ASCII_UPPERCASE]:
@@ -171,4 +223,3 @@ else:
 
 
 print(''.join(password))
-
