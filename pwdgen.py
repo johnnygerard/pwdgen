@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # MIT License
 #
 # Copyright (c) 2021 Johnny Gérard
@@ -21,7 +20,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 from string import *
 from secrets import choice, randbelow
 import argparse
@@ -38,12 +36,12 @@ By default, each character is randomly selected from the ASCII character set\
  (excluding space and control characters).
 The user-defined character set is built in two phases:
 
-    The first phase forms a base character set using one or more flags (--all\
+    1. Form a base character set using one or more flags (--all\
  when no flags are passed).
-    Each flag is its own character set and their combination defines a\
- character superset (equivalent to their set union).
+    These flags combined define a character superset (equal to their set\
+ union).
 
-    The second phase adds or substracts specific characters from that set\
+    2. Insert or remove specific characters from base set\
  using the options --include or --exclude.
     These two options may require surrounding quotes and default to the empty\
  string.''',
@@ -54,6 +52,7 @@ The user-defined character set is built in two phases:
   no slashes:  %(prog)s -e '\\/'
   8-bit key:   %(prog)s -b 8
   base64 key:  %(prog)s -ai '+/'""")
+
 parser.add_argument(
     'length', nargs='?', default=16, type=int,
     help='number of password characters (default: %(default)s)')
@@ -61,64 +60,43 @@ parser.add_argument(
     '-v', '--version',  action='version', version='%(prog)s 2.1',
     help="show program's version number and exit\n\n")
 
-parser.add_argument(
-    '-l', '--lowercase', action='store_true',
-    help='latin small letters (a-z)')
-parser.add_argument(
-    '-u', '--uppercase', action='store_true',
-    help='latin capital letters (A-Z)')
-parser.add_argument(
-    '-d', '--digit', action='store_true',
-    help='decimal digits (0-9)')
-parser.add_argument(
-    '-s', '--symbol', action='store_true',
-    help='punctuation and symbols')
-parser.add_argument(
-    '-L', '--letter', action='store_true',
-    help='same as --lowercase --uppercase')
-parser.add_argument(
-    '-a', '--alphanumeric', action='store_true',
-    help='same as --letter --digit')
-parser.add_argument(
-    '-A', '--all', action='store_true',
-    help='same as --alphanumeric --symbol (default)')
-parser.add_argument(
-    '-0', '--empty', action='store_true',
-    help='empty character set (only useful if combined with --include)\n\n')
+
+def add_flag(short_option, long_option, help_string):
+    parser.add_argument(f'-{short_option}', f'--{long_option}',
+                        action='store_true', help=help_string)
+
+
+add_flag('l', 'lowercase', 'latin small letters (a-z)')
+add_flag('u', 'uppercase', 'latin capital letters (A-Z)')
+add_flag('d', 'digit', 'decimal digits (0-9)')
+add_flag('s', 'symbol', 'punctuation and symbols')
+add_flag('L', 'letter', 'same as --lowercase --uppercase')
+add_flag('a', 'alphanumeric', 'same as --letter --digit')
+add_flag('A', 'all', 'same as --alphanumeric --symbol (default)')
+add_flag('0', 'empty', 'empty character set (use with --include)')
+add_flag('b', 'binary', 'bits (0-1)')
+add_flag('o', 'octal', 'octal digits (0-7)')
+add_flag('x', 'hex-lower', 'lowercase hexadecimal digits (0-9, a-f)')
+add_flag('X', 'hex-upper', 'same as --hex-lower converted to uppercase\n\n')
 
 parser.add_argument(
     '-e', '--exclude', default='', metavar='EXCLUDED',
-    help='string of characters to exclude')
+    help='remove EXCLUDED characters from base set')
 parser.add_argument(
     '-i', '--include', default='', metavar='INCLUDED',
-    help='string of characters to include\n\n')
-
-parser.add_argument(
-    '-b', '--binary', action='store_true',
-    help='bits (0-1)')
-parser.add_argument(
-    '-o', '--octal', action='store_true',
-    help='octal digits (0-7)')
-parser.add_argument(
-    '-x', '--hex-lower', action='store_true',
-    help='lowercase hexadecimal digits (0-9, a-f)')
-parser.add_argument(
-    '-X', '--hex-upper', action='store_true',
-    help='uppercase hexadecimal digits (0-9, A-F)\n\n')
+    help='insert INCLUDED characters into base set\n\n')
 
 parser.add_argument('--pure', action='store_true', help='''Disable the minimum\
- of 1 character applied to the following categories:
-    digits, symbols, lowercase and uppercase
-This minimum only applies to passwords with a length of at least 4.
+ of 1 character applied to digits, symbols, lowercase and uppercase.
+Only applies to passwords of length >= 4.
 As example: '%(prog)s 4' always contains exactly 1 character of each category.
-            '%(prog)s 4 --pure' could yield the password 0000 or $$$$.''')
+            '%(prog)s 4 --pure' could produce 0000 or $$$$.''')
 
 namespace = parser.parse_args()
 
 # validate length argument
 if namespace.length <= 0:
     sys.exit(f'{PROG_NAME}: error: length must be positive')
-
 
 # define character sets
 LOWERCASE = set(ascii_lowercase)
@@ -132,7 +110,6 @@ BINARY = set('01')
 OCTAL = set(octdigits)
 HEX_LOWER = DIGIT | set('abcdef')
 HEX_UPPER = DIGIT | set('ABCDEF')
-
 
 excluded_set = set(namespace.exclude)
 included_set = set(namespace.include)
@@ -177,10 +154,9 @@ else:
     if not character_set and not namespace.empty:
         character_set = ALL
 
-# phase 2: add or substract using --include and --exclude strings
+# phase 2: insert or remove using --include and --exclude strings
 character_set |= included_set
 character_set -= excluded_set
-
 
 character_list = list(character_set)
 if not character_list:
@@ -220,6 +196,5 @@ else:
     # remaining characters
     for i in range(namespace.length):
         password.append(choice(character_list))
-
 
 print(''.join(password))
