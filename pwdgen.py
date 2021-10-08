@@ -41,7 +41,7 @@ The user-defined character set is built in two phases:
     These flags combined define a character superset (equal to their set\
  union).
 
-    2. Insert or remove specific characters from base set\
+    2. Add or remove specific characters from base set\
  using the options --include or --exclude.
     These two options may require surrounding quotes and default to the empty\
  string.''',
@@ -84,7 +84,7 @@ parser.add_argument(
     help='remove EXCLUDED characters from base set')
 parser.add_argument(
     '-i', '--include', default='', metavar='INCLUDED',
-    help='insert INCLUDED characters into base set\n\n')
+    help='add INCLUDED characters to base set\n\n')
 
 parser.add_argument('--pure', action='store_true', help='''Disable the minimum\
  of 1 character applied to digits, symbols, lowercase and uppercase.
@@ -154,7 +154,7 @@ else:
     if not character_set and not namespace.empty:
         character_set = ALL
 
-# phase 2: insert or remove using --include and --exclude strings
+# phase 2: add or remove using --include and --exclude strings
 character_set |= included_set
 character_set -= excluded_set
 
