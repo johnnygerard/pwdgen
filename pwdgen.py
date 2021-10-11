@@ -57,7 +57,7 @@ parser.add_argument(
     'length', nargs='?', default=16, type=int,
     help='number of password characters (default: %(default)s)')
 parser.add_argument(
-    '-v', '--version',  action='version', version='%(prog)s 2.1',
+    '-v', '--version',  action='version', version='%(prog)s 2.2',
     help="show program's version number and exit\n\n")
 
 
